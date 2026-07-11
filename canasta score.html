@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Canasta Score Sheet</title>
+
+<style>
+  body {
+    font-family: sans-serif;
+    margin: 10px;
+    padding-bottom: 200px;
+  }
+
+  h1 {
+    text-align: center;
+    font-size: 1.6em;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+  }
+
+  th, td {
+    border: 1px solid #ccc;
+    padding: 4px;
+    font-size: 0.85em;
+    text-align: center;
+  }
+
+  th {
+    background: #f2f2f2;
+  }
+
+  /* Sticky header */
+  thead th {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: #f2f2f2;
+  }
+
+  /* Alternating row shading */
+  tbody tr:nth-child(odd) {
+    background: #ffffff;
+  }
+  tbody tr:nth-child(even) {
+    background: #f9f9f9;
+  }
+
+  /* Remove +/- arrows */
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+
+  /* Narrow number fields */
+  input[type="number"] {
+    width: 38px;
+    font-size: 1em;
+    padding: 2px;
+    text-align: right;
+  }
+
+  input[type="checkbox"] {
+    transform: scale(1.2);
+    margin: 4px;
+  }
+
+  button {
+    width: 100%;
+    padding: 12px;
+    font-size: 1.1em;
+    margin-top: 10px;
+    background: #1976d2;
+    color: white;
+    border: none;
+    border-radius: 6px;
+  }
+
+  button:active {
+    background: #0f4fa8;
+  }
+
+  .winner {
+    font-size: 1.3em;
+    text-align: center;
+    margin-top: 20px;
+    color: darkgreen;
+    font-weight: bold;
+  }
+
+  .team-header {
+    background: #e3f4ff;
+  }
+
+  /* Gentle shading for Women/Men columns */
+  .women-col {
+    background: #f7fbff;
+  }
+  .men-col {
+    background: #fff7f7;
+  }
+
+  td span {
+    font-size: 1em;
+    font-weight: bold;
+  }
+</style>
+</head>
+
+<body>
+
+<h1>Canasta Score Sheet</h1>
+<p style="text-align:center;">First team to reach 8500 points wins.</p>
+
+<table id="scoreTable">
+  <thead>
+    <tr>
+      <th rowspan="2">Rnd</th>
+      <th colspan="9" class="team-header">Women</th>
+      <th colspan="9" class="team-header">Men</th>
+    </tr>
+    <tr>
+      <th>Out</th>
+      <th>Perfect</th>
+      <th>Threes</th>
+      <th>Canastas</th>
+      <th>Special</th>
+      <th>Card</th>
+      <th>Deduct</th>
+      <th>Round</th>
+      <th>Total</th>
+
+      <th>Out</th>
+      <th>Perfect</th>
+      <th>Threes</th>
+      <th>Canastas</th>
+      <th>Special</th>
+      <th>Card</th>
+      <th>Deduct</th>
+      <th>Round</th>
+      <th>Total</th>
+    </tr>
+  </thead>
+
+  <tbody id="scoreBody"></tbody>
+</table>
+
+<button onclick="addRound()">Add Round</button>
+<button onclick="deleteEmptyRounds()" style="background:#8e24aa;">Delete Empty Rounds</button>
+<button onclick="resetGame()" style="background:#b71c1c;">Reset Game</button>
+
+<div id="winnerMsg" class="winner"></div>
+
+<script>
+let roundCount = 0;
+const WINNING_SCORE = 8500;
+
+/* -------------------------
+   Persistent Storage
+------------------------- */
+function saveState() {
+  const rows = [...document.querySelectorAll('#scoreBody tr')].map(row => {
+    return {
+      outA: row.querySelector('.outA').checked,
+      perfectA: row.querySelector('.perfectA').checked,
+      threesA: row.querySelector('.threesA').value,
+      canastasA: row.querySelector('.canastasA').value,
+      specialA: row.querySelector('.specialA').value,
+      cardA: row.querySelector('.cardA').value,
+      deductA: row.querySelector('.deductA').value,
+
+      outB: row.querySelector('.outB').checked,
+      perfectB: row.querySelector('.perfectB').checked,
+      threesB: row.querySelector('.threesB').value,
+      canastasB: row.querySelector('.canastasB').value,
+      specialB: row.querySelector('.specialB').value,
+      cardB: row.querySelector('.cardB').value,
+      deductB: row.querySelector('.deductB').value
+    };
+  });
+
+  localStorage.setItem('canastaScores', JSON.stringify(rows));
+}
+
+function loadState() {
+  const saved = localStorage.getItem('canastaScores');
+  if (!saved) {
+    addRound();
+    return;
+  }
+
+  const rows = JSON.parse(saved);
+  rows.forEach(data => {
+    addRound();
+    const row = document.querySelector(`#scoreBody tr:last-child`);
+
+    row.querySelector('.outA').checked = data.outA;
+    row.querySelector('.perfectA').checked = data.perfectA;
+    row.querySelector('.threesA').value = data.threesA;
+    row.querySelector('.canastasA').value = data.canastasA;
+    row.querySelector('.specialA').value = data.specialA;
+    row.querySelector('.cardA').value = data.cardA;
+    row.querySelector('.deductA').value = data.deductA;
+
+    row.querySelector('.outB').checked = data.outB;
+    row.querySelector('.perfectB').checked = data.perfectB;
+    row.querySelector('.threesB').value = data.threesB;
+    row.querySelector('.canastasB').value = data.canastasB;
+    row.querySelector('.specialB').value = data.specialB;
+    row.querySelector('.cardB').value = data.cardB;
+    row.querySelector('.deductB').value = data.deductB;
+  });
+
+  renumberRounds();
+  recalculate();
+}
+
+/* -------------------------
+   Renumber Rounds
+------------------------- */
+function renumberRounds() {
+  const rows = document.querySelectorAll('#scoreBody tr');
+  let i = 1;
+  rows.forEach(row => {
+    const roundCell = row.querySelector('td:first-child');
+    roundCell.textContent = i;
+    row.dataset.round = i;
+    i++;
+  });
+  roundCount = rows.length;
+}
+
+/* -------------------------
+   Reset Game
+------------------------- */
+function resetGame() {
+  if (!confirm("Reset the entire game and clear all scores?")) return;
+
+  localStorage.removeItem('canastaScores');
+  document.getElementById('scoreBody').innerHTML = "";
+  roundCount = 0;
+  addRound();
+  renumberRounds();
+  document.getElementById('winnerMsg').textContent = "";
+}
+
+/* -------------------------
+   Delete Empty Rounds
+------------------------- */
+function deleteEmptyRounds() {
+  const rows = document.querySelectorAll('#scoreBody tr');
+  let deleted = false;
+
+  rows.forEach(row => {
+    const inputs = row.querySelectorAll('input[type="number"]');
+    const checkboxes = row.querySelectorAll('input[type="checkbox"]');
+
+    const allBlank = [...inputs].every(i => i.value.trim() === "");
+    const allUnchecked = [...checkboxes].every(c => !c.checked);
+
+    if (allBlank && allUnchecked) {
+      row.remove();
+      deleted = true;
+    }
+  });
+
+  if (deleted) {
+    renumberRounds();
+    recalculate();
+    saveState();
+  }
+}
+
+/* -------------------------
+   Add Round
+------------------------- */
+function addRound() {
+  roundCount++;
+  const tbody = document.getElementById('scoreBody');
+  const tr = document.createElement('tr');
+  tr.dataset.round = roundCount;
+
+  tr.innerHTML = `
+    <td>${roundCount}</td>
+
+    <!-- Women -->
+    <td class="women-col"><input type="checkbox" class="outA"></td>
+    <td class="women-col"><input type="checkbox" class="perfectA"></td>
+    <td class="women-col"><input type="number" class="threesA" inputmode="decimal"></td>
+    <td class="women-col"><input type="number" class="canastasA" inputmode="decimal"></td>
+    <td class="women-col"><input type="number" class="specialA" inputmode="decimal"></td>
+    <td class="women-col"><input type="number" class="cardA" inputmode="decimal"></td>
+    <td class="women-col"><input type="number" class="deductA" inputmode="decimal"></td>
+    <td class="women-col"><span class="roundTotalA">0</span></td>
+    <td class="women-col"><span class="runningTotalA">0</span></td>
+
+    <!-- Men -->
+    <td class="men-col"><input type="checkbox" class="outB"></td>
+    <td class="men-col"><input type="checkbox" class="perfectB"></td>
+    <td class="men-col"><input type="number" class="threesB" inputmode="decimal"></td>
+    <td class="men-col"><input type="number" class="canastasB" inputmode="decimal"></td>
+    <td class="men-col"><input type="number" class="specialB" inputmode="decimal"></td>
+    <td class="men-col"><input type="number" class="cardB" inputmode="decimal"></td>
+    <td class="men-col"><input type="number" class="deductB" inputmode="decimal"></td>
+    <td class="men-col"><span class="roundTotalB">0</span></td>
+    <td class="men-col"><span class="runningTotalB">0</span></td>
+  `;
+
+  tbody.appendChild(tr);
+
+  // Initialize numeric fields to blank
+  tr.querySelectorAll('input[type="number"]').forEach(input => {
+    input.value = "";
+  });
+
+  // Attach listeners
+  tr.querySelectorAll('input').forEach(input => {
+    input.addEventListener('input', () => { recalculate(); saveState(); });
+    input.addEventListener('change', () => { recalculate(); saveState(); });
+  });
+
+  recalculate();
+  saveState();
+
+  window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+}
+
+/* -------------------------
+   Scoring Logic
+------------------------- */
+function getNumber(v) {
+  const n = parseInt(v, 10);
+  return isNaN(n) ? 0 : n;
+}
+
+function recalculate() {
+  const rows = document.querySelectorAll('#scoreBody tr');
+  let runningA = 0;
+  let runningB = 0;
+  let winnerText = '';
+
+  rows.forEach(row => {
+    const outA = row.querySelector('.outA').checked ? 100 : 0;
+    const perfectA = row.querySelector('.perfectA').checked ? 100 : 0;
+
+    const threesA = getNumber(row.querySelector('.threesA').value);
+    const canastasA = getNumber(row.querySelector('.canastasA').value);
+    const specialA = getNumber(row.querySelector('.specialA').value);
+    const cardA = getNumber(row.querySelector('.cardA').value);
+    const deductA = getNumber(row.querySelector('.deductA').value);
+
+    const roundTotalA =
+      outA + perfectA + threesA + canastasA + specialA + cardA - deductA;
+    runningA += roundTotalA;
+
+    const rtA = row.querySelector('.roundTotalA');
+    rtA.textContent = roundTotalA;
+    rtA.style.color = roundTotalA > 0 ? 'green' : roundTotalA < 0 ? 'red' : 'black';
+
+    row.querySelector('.runningTotalA').textContent = runningA;
+
+    const outB = row.querySelector('.outB').checked ? 100 : 0;
+    const perfectB = row.querySelector('.perfectB').checked ? 100 : 0;
+
+    const threesB = getNumber(row.querySelector('.threesB').value);
+    const canastasB = getNumber(row.querySelector('.canastasB').value);
+    const specialB = getNumber(row.querySelector('.specialB').value);
+    const cardB = getNumber(row.querySelector('.cardB').value);
+    const deductB = getNumber(row.querySelector('.deductB').value);
+
+    const roundTotalB =
+      outB + perfectB + threesB + canastasB + specialB + cardB - deductB;
+    runningB += roundTotalB;
+
+    const rtB = row.querySelector('.roundTotalB');
+    rtB.textContent = roundTotalB;
+    rtB.style.color = roundTotalB > 0 ? 'green' : roundTotalB < 0 ? 'red' : 'black';
+
+    row.querySelector('.runningTotalB').textContent = runningB;
+  });
+
+  if (runningA >= WINNING_SCORE || runningB >= WINNING_SCORE) {
+    winnerText =
+      runningA > runningB ? `Women win with ${runningA} points` :
+      runningB > runningA ? `Men win with ${runningB} points` :
+      `Tie game at ${runningA} points`;
+  }
+
+  document.getElementById('winnerMsg').textContent = winnerText;
+}
+
+/* -------------------------
+   Initialize
+------------------------- */
+loadState();
+</script>
+
+</body>
+</html>
