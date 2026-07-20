@@ -7,33 +7,46 @@
 <style>
   body {
     font-family: sans-serif;
-    margin: 10px;
-    padding-bottom: 200px;
+    margin: 0;
+    padding: 0;
+    background: #fafafa;
+  }
+
+  /* Narrow centered page */
+  #page {
+    max-width: 420px;
+    margin: auto;
+    background: white;
+    padding: 10px;
+    box-shadow: 0 0 8px rgba(0,0,0,0.15);
+    box-sizing: border-box;
   }
 
   h1 {
     text-align: center;
-    font-size: 1.6em;
+    font-size: 1.3em;
+    margin-top: 5px;
   }
 
   table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 15px;
+    margin-top: 10px;
+    table-layout: fixed;
   }
 
   th, td {
     border: 1px solid #ccc;
-    padding: 4px;
-    font-size: 0.85em;
+    padding: 3px;
+    font-size: 0.78em;
     text-align: center;
+    box-sizing: border-box;
   }
 
   th {
     background: #f2f2f2;
   }
 
-  /* Sticky header */
   thead th {
     position: sticky;
     top: 0;
@@ -41,15 +54,10 @@
     background: #f2f2f2;
   }
 
-  /* Alternating row shading */
-  tbody tr:nth-child(odd) {
-    background: #ffffff;
-  }
-  tbody tr:nth-child(even) {
-    background: #f9f9f9;
-  }
+  tbody tr:nth-child(odd) { background: #ffffff; }
+  tbody tr:nth-child(even) { background: #f9f9f9; }
 
-  /* Remove +/- arrows */
+  /* Remove spin buttons */
   input[type="number"]::-webkit-inner-spin-button,
   input[type="number"]::-webkit-outer-spin-button {
     -webkit-appearance: none;
@@ -59,38 +67,18 @@
     -moz-appearance: textfield;
   }
 
-  /* Narrow number fields */
   input[type="number"] {
-    width: 38px;
-    font-size: 1em;
+    width: 40px;
+    font-size: 0.9em;
     padding: 2px;
     text-align: right;
-  }
-
-  input[type="checkbox"] {
-    transform: scale(1.2);
-    margin: 4px;
-  }
-
-  button {
-    width: 100%;
-    padding: 12px;
-    font-size: 1.1em;
-    margin-top: 10px;
-    background: #1976d2;
-    color: white;
-    border: none;
-    border-radius: 6px;
-  }
-
-  button:active {
-    background: #0f4fa8;
+    box-sizing: border-box;
   }
 
   .winner {
-    font-size: 1.3em;
+    font-size: 1.1em;
     text-align: center;
-    margin-top: 20px;
+    margin-top: 12px;
     color: darkgreen;
     font-weight: bold;
   }
@@ -99,62 +87,114 @@
     background: #e3f4ff;
   }
 
-  /* Gentle shading for Women/Men columns */
-  .women-col {
-    background: #f7fbff;
-  }
-  .men-col {
-    background: #fff7f7;
+  .women-col { background: #f7fbff; }
+  .men-col { background: #fff7f7; }
+
+  #teamInputs {
+    text-align: center;
+    margin-bottom: 10px;
   }
 
-  td span {
-    font-size: 1em;
+  #teamInputs input {
+    font-size: 0.9em;
+    padding: 3px;
+    margin: 3px;
+    width: 130px;
+    text-align: center;
+    box-sizing: border-box;
+  }
+
+  .subrow {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    margin: 2px 0;
+  }
+
+  .score-label {
+    font-size: 0.7em;
+    color: #555;
+    display: block;
+    margin-top: 1px;
+  }
+
+  .roundScore {
+    font-size: 1.0em;
     font-weight: bold;
+  }
+
+  .runningScore {
+    font-size: 1.0em;
+    font-weight: bold;
+    color: #0044cc;
+  }
+
+  #buttonRow {
+    display: flex;
+    justify-content: space-between;
+    gap: 6px;
+    margin-top: 10px;
+  }
+
+  #buttonRow button {
+    flex: 1 1 0;
+    padding: 6px;
+    font-size: 0.9em;
+    background: #1976d2;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+
+  #buttonRow button:nth-child(2) {
+    background: #8e24aa;
+  }
+
+  #buttonRow button:nth-child(3) {
+    background: #b71c1c;
+  }
+
+  #buttonRow button:active {
+    filter: brightness(0.9);
   }
 </style>
 </head>
 
 <body>
+<div id="page">
 
 <h1>Canasta Score Sheet</h1>
 <p style="text-align:center;">First team to reach 8500 wins.</p>
 
+<div id="teamInputs">
+  <input id="teamAName" placeholder="Team A Name">
+  <input id="teamBName" placeholder="Team B Name">
+  <button onclick="saveTeamNames()">Save Names</button>
+</div>
+
 <table id="scoreTable">
   <thead>
     <tr>
-      <th rowspan="2">Rnd</th>
-      <th colspan="9" class="team-header">Women</th>
-      <th colspan="9" class="team-header">Men</th>
+      <th style="width:40px;">Rnd</th>
+      <th colspan="4" class="team-header" id="teamAHeader">Team A</th>
+      <th colspan="4" class="team-header" id="teamBHeader">Team B</th>
     </tr>
     <tr>
-      <th>Out</th>
-      <th>Perfect</th>
-      <th>Threes</th>
-      <th>Canastas</th>
-      <th>Special</th>
-      <th>Card</th>
-      <th>Deduct</th>
-      <th>Round</th>
-      <th>Total</th>
-
-      <th>Out</th>
-      <th>Perfect</th>
-      <th>Threes</th>
-      <th>Canastas</th>
-      <th>Special</th>
-      <th>Card</th>
-      <th>Deduct</th>
-      <th>Round</th>
-      <th>Total</th>
+      <th></th>
+      <th colspan="4">Round Inputs</th>
+      <th colspan="4">Round Inputs</th>
     </tr>
   </thead>
 
   <tbody id="scoreBody"></tbody>
 </table>
 
-<button onclick="addRound()">Add Round</button>
-<button onclick="deleteEmptyRounds()" style="background:#8e24aa;">Delete Empty Rounds</button>
-<button onclick="resetGame()" style="background:#b71c1c;">Reset Game</button>
+<div id="buttonRow">
+  <button onclick="addRound()">Add Round</button>
+  <button onclick="deleteEmptyRounds()">Delete Empty</button>
+  <button onclick="resetGame()">Reset Game</button>
+</div>
 
 <div id="winnerMsg" class="winner"></div>
 
@@ -162,22 +202,43 @@
 let roundCount = 0;
 const WINNING_SCORE = 8500;
 
-/* -------------------------
-   Persistent Storage
-------------------------- */
+/* Team Names */
+function loadTeamNames() {
+  const a = localStorage.getItem('teamAName') || "Team A";
+  const b = localStorage.getItem('teamBName') || "Team B";
+
+  document.getElementById('teamAName').value = a;
+  document.getElementById('teamBName').value = b;
+
+  document.getElementById('teamAHeader').textContent = a;
+  document.getElementById('teamBHeader').textContent = b;
+}
+
+function saveTeamNames() {
+  const a = document.getElementById('teamAName').value.trim() || "Team A";
+  const b = document.getElementById('teamBName').value.trim() || "Team B";
+
+  localStorage.setItem('teamAName', a);
+  localStorage.setItem('teamBName', b);
+
+  document.getElementById('teamAHeader').textContent = a;
+  document.getElementById('teamBHeader').textContent = b;
+
+  recalculate();
+}
+
+/* Persistent Storage */
 function saveState() {
   const rows = [...document.querySelectorAll('#scoreBody tr')].map(row => {
     return {
-      outA: row.querySelector('.outA').checked,
-      perfectA: row.querySelector('.perfectA').checked,
+      extraA: row.querySelector('.extraA').value,
       threesA: row.querySelector('.threesA').value,
       canastasA: row.querySelector('.canastasA').value,
       specialA: row.querySelector('.specialA').value,
       cardA: row.querySelector('.cardA').value,
       deductA: row.querySelector('.deductA').value,
 
-      outB: row.querySelector('.outB').checked,
-      perfectB: row.querySelector('.perfectB').checked,
+      extraB: row.querySelector('.extraB').value,
       threesB: row.querySelector('.threesB').value,
       canastasB: row.querySelector('.canastasB').value,
       specialB: row.querySelector('.specialB').value,
@@ -201,16 +262,14 @@ function loadState() {
     addRound();
     const row = document.querySelector(`#scoreBody tr:last-child`);
 
-    row.querySelector('.outA').checked = data.outA;
-    row.querySelector('.perfectA').checked = data.perfectA;
+    row.querySelector('.extraA').value = data.extraA;
     row.querySelector('.threesA').value = data.threesA;
     row.querySelector('.canastasA').value = data.canastasA;
     row.querySelector('.specialA').value = data.specialA;
     row.querySelector('.cardA').value = data.cardA;
     row.querySelector('.deductA').value = data.deductA;
 
-    row.querySelector('.outB').checked = data.outB;
-    row.querySelector('.perfectB').checked = data.perfectB;
+    row.querySelector('.extraB').value = data.extraB;
     row.querySelector('.threesB').value = data.threesB;
     row.querySelector('.canastasB').value = data.canastasB;
     row.querySelector('.specialB').value = data.specialB;
@@ -222,24 +281,19 @@ function loadState() {
   recalculate();
 }
 
-/* -------------------------
-   Renumber Rounds
-------------------------- */
+/* Renumber Rounds */
 function renumberRounds() {
   const rows = document.querySelectorAll('#scoreBody tr');
   let i = 1;
   rows.forEach(row => {
-    const roundCell = row.querySelector('td:first-child');
-    roundCell.textContent = i;
+    row.querySelector('.roundNum').textContent = i;
     row.dataset.round = i;
     i++;
   });
   roundCount = rows.length;
 }
 
-/* -------------------------
-   Reset Game
-------------------------- */
+/* Reset Game */
 function resetGame() {
   if (!confirm("Reset the entire game and clear all scores?")) return;
 
@@ -251,21 +305,16 @@ function resetGame() {
   document.getElementById('winnerMsg').textContent = "";
 }
 
-/* -------------------------
-   Delete Empty Rounds
-------------------------- */
+/* Delete Empty Rounds */
 function deleteEmptyRounds() {
   const rows = document.querySelectorAll('#scoreBody tr');
   let deleted = false;
 
   rows.forEach(row => {
     const inputs = row.querySelectorAll('input[type="number"]');
-    const checkboxes = row.querySelectorAll('input[type="checkbox"]');
-
     const allBlank = [...inputs].every(i => i.value.trim() === "");
-    const allUnchecked = [...checkboxes].every(c => !c.checked);
 
-    if (allBlank && allUnchecked) {
+    if (allBlank) {
       row.remove();
       deleted = true;
     }
@@ -278,9 +327,7 @@ function deleteEmptyRounds() {
   }
 }
 
-/* -------------------------
-   Add Round
-------------------------- */
+/* Add Round */
 function addRound() {
   roundCount++;
   const tbody = document.getElementById('scoreBody');
@@ -288,39 +335,57 @@ function addRound() {
   tr.dataset.round = roundCount;
 
   tr.innerHTML = `
-    <td>${roundCount}</td>
+    <td class="roundNum">${roundCount}</td>
 
-    <!-- Women -->
-    <td class="women-col"><input type="checkbox" class="outA"></td>
-    <td class="women-col"><input type="checkbox" class="perfectA"></td>
-    <td class="women-col"><input type="number" class="threesA" inputmode="decimal"></td>
-    <td class="women-col"><input type="number" class="canastasA" inputmode="decimal"></td>
-    <td class="women-col"><input type="number" class="specialA" inputmode="decimal"></td>
-    <td class="women-col"><input type="number" class="cardA" inputmode="decimal"></td>
-    <td class="women-col"><input type="number" class="deductA" inputmode="decimal"></td>
-    <td class="women-col"><span class="roundTotalA">0</span></td>
-    <td class="women-col"><span class="runningTotalA">0</span></td>
+    <td colspan="4" class="women-col">
+      <div class="subrow">
+        <input type="number" class="extraA" placeholder="Extra">
+        <input type="number" class="threesA" placeholder="Threes">
+        <input type="number" class="canastasA" placeholder="Canastas">
+        <input type="number" class="specialA" placeholder="Special">
+      </div>
+      <div class="subrow">
+        <input type="number" class="cardA" placeholder="Card">
+        <input type="number" class="deductA" placeholder="Deduct">
+        <div>
+          <span class="roundScore roundTotalA">0</span>
+          <span class="score-label">Round</span>
+        </div>
+        <div>
+          <span class="runningScore runningTotalA">0</span>
+          <span class="score-label">Running</span>
+        </div>
+      </div>
+    </td>
 
-    <!-- Men -->
-    <td class="men-col"><input type="checkbox" class="outB"></td>
-    <td class="men-col"><input type="checkbox" class="perfectB"></td>
-    <td class="men-col"><input type="number" class="threesB" inputmode="decimal"></td>
-    <td class="men-col"><input type="number" class="canastasB" inputmode="decimal"></td>
-    <td class="men-col"><input type="number" class="specialB" inputmode="decimal"></td>
-    <td class="men-col"><input type="number" class="cardB" inputmode="decimal"></td>
-    <td class="men-col"><input type="number" class="deductB" inputmode="decimal"></td>
-    <td class="men-col"><span class="roundTotalB">0</span></td>
-    <td class="men-col"><span class="runningTotalB">0</span></td>
+    <td colspan="4" class="men-col">
+      <div class="subrow">
+        <input type="number" class="extraB" placeholder="Extra">
+        <input type="number" class="threesB" placeholder="Threes">
+        <input type="number" class="canastasB" placeholder="Canastas">
+        <input type="number" class="specialB" placeholder="Special">
+      </div>
+      <div class="subrow">
+        <input type="number" class="cardB" placeholder="Card">
+        <input type="number" class="deductB" placeholder="Deduct">
+        <div>
+          <span class="roundScore roundTotalB">0</span>
+          <span class="score-label">Round</span>
+        </div>
+        <div>
+          <span class="runningScore runningTotalB">0</span>
+          <span class="score-label">Running</span>
+        </div>
+      </div>
+    </td>
   `;
 
   tbody.appendChild(tr);
 
-  // Initialize numeric fields to blank
   tr.querySelectorAll('input[type="number"]').forEach(input => {
     input.value = "";
   });
 
-  // Attach listeners
   tr.querySelectorAll('input').forEach(input => {
     input.addEventListener('input', () => { recalculate(); saveState(); });
     input.addEventListener('change', () => { recalculate(); saveState(); });
@@ -332,9 +397,7 @@ function addRound() {
   window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
 }
 
-/* -------------------------
-   Scoring Logic
-------------------------- */
+/* Scoring Logic */
 function getNumber(v) {
   const n = parseInt(v, 10);
   return isNaN(n) ? 0 : n;
@@ -346,10 +409,11 @@ function recalculate() {
   let runningB = 0;
   let winnerText = '';
 
-  rows.forEach(row => {
-    const outA = row.querySelector('.outA').checked ? 100 : 0;
-    const perfectA = row.querySelector('.perfectA').checked ? 100 : 0;
+  const teamA = localStorage.getItem('teamAName') || "Team A";
+  const teamB = localStorage.getItem('teamBName') || "Team B";
 
+  rows.forEach(row => {
+    const extraA = getNumber(row.querySelector('.extraA').value);
     const threesA = getNumber(row.querySelector('.threesA').value);
     const canastasA = getNumber(row.querySelector('.canastasA').value);
     const specialA = getNumber(row.querySelector('.specialA').value);
@@ -357,7 +421,7 @@ function recalculate() {
     const deductA = getNumber(row.querySelector('.deductA').value);
 
     const roundTotalA =
-      outA + perfectA + threesA + canastasA + specialA + cardA - deductA;
+      extraA + threesA + canastasA + specialA + cardA - deductA;
     runningA += roundTotalA;
 
     const rtA = row.querySelector('.roundTotalA');
@@ -366,9 +430,7 @@ function recalculate() {
 
     row.querySelector('.runningTotalA').textContent = runningA;
 
-    const outB = row.querySelector('.outB').checked ? 100 : 0;
-    const perfectB = row.querySelector('.perfectB').checked ? 100 : 0;
-
+    const extraB = getNumber(row.querySelector('.extraB').value);
     const threesB = getNumber(row.querySelector('.threesB').value);
     const canastasB = getNumber(row.querySelector('.canastasB').value);
     const specialB = getNumber(row.querySelector('.specialB').value);
@@ -376,7 +438,7 @@ function recalculate() {
     const deductB = getNumber(row.querySelector('.deductB').value);
 
     const roundTotalB =
-      outB + perfectB + threesB + canastasB + specialB + cardB - deductB;
+      extraB + threesB + canastasB + specialB + cardB - deductB;
     runningB += roundTotalB;
 
     const rtB = row.querySelector('.roundTotalB');
@@ -388,19 +450,19 @@ function recalculate() {
 
   if (runningA >= WINNING_SCORE || runningB >= WINNING_SCORE) {
     winnerText =
-      runningA > runningB ? `Women win with ${runningA} points` :
-      runningB > runningA ? `Men win with ${runningB} points` :
+      runningA > runningB ? `${teamA} win with ${runningA} points` :
+      runningB > runningA ? `${teamB} win with ${runningB} points` :
       `Tie game at ${runningA} points`;
   }
 
   document.getElementById('winnerMsg').textContent = winnerText;
 }
 
-/* -------------------------
-   Initialize
-------------------------- */
+/* Initialize */
+loadTeamNames();
 loadState();
 </script>
 
+</div>
 </body>
 </html>
