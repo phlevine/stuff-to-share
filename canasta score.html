@@ -12,13 +12,13 @@
     background: #fafafa;
   }
 
-  /* Wider centered page (75% wider than before) */
+  /* Auto-scale container */
   #page {
-    max-width: 735px;   /* was 420px */
+    width: 100%;
+    max-width: 100%;
     margin: auto;
     background: white;
     padding: 14px;
-    box-shadow: 0 0 8px rgba(0,0,0,0.15);
     box-sizing: border-box;
   }
 
@@ -32,7 +32,7 @@
     width: 100%;
     border-collapse: collapse;
     margin-top: 10px;
-    table-layout: fixed;
+    table-layout: fixed; /* forces columns to fit */
   }
 
   th, td {
@@ -41,6 +41,7 @@
     font-size: 0.85em;
     text-align: center;
     box-sizing: border-box;
+    word-wrap: break-word;
   }
 
   th {
@@ -67,9 +68,12 @@
     -moz-appearance: textfield;
   }
 
+  /* Responsive input boxes */
   input[type="number"] {
-    width: 55px;
-    font-size: 1em;
+    width: 100%;
+    max-width: 60px;
+    min-width: 40px;
+    font-size: 0.9em;
     padding: 2px;
     text-align: right;
     box-sizing: border-box;
@@ -100,15 +104,18 @@
     padding: 4px;
     margin: 4px;
     width: 160px;
+    max-width: 40%;
     text-align: center;
     box-sizing: border-box;
   }
 
+  /* Two-row blocks */
   .subrow {
     display: flex;
     justify-content: center;
-    gap: 10px;
+    gap: 8px;
     margin: 4px 0;
+    flex-wrap: wrap; /* allows wrapping on narrow screens */
   }
 
   .score-label {
@@ -129,16 +136,17 @@
     color: #0044cc;
   }
 
-  /* Three buttons in one row */
+  /* Three buttons in one responsive row */
   #buttonRow {
     display: flex;
     justify-content: space-between;
     gap: 8px;
     margin-top: 12px;
+    flex-wrap: wrap;
   }
 
   #buttonRow button {
-    flex: 1 1 0;
+    flex: 1 1 30%;
     padding: 8px;
     font-size: 1em;
     background: #1976d2;
