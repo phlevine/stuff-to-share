@@ -32,7 +32,7 @@
     width: 100%;
     border-collapse: collapse;
     margin-top: 10px;
-    table-layout: fixed; /* forces columns to fit */
+    table-layout: fixed;
   }
 
   th, td {
@@ -58,18 +58,8 @@
   tbody tr:nth-child(odd) { background: #ffffff; }
   tbody tr:nth-child(even) { background: #f9f9f9; }
 
-  /* Remove spin buttons */
-  input[type="number"]::-webkit-inner-spin-button,
-  input[type="number"]::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-  input[type="number"] {
-    -moz-appearance: textfield;
-  }
-
   /* Responsive input boxes */
-  input[type="number"] {
+  input[type="text"] {
     width: 100%;
     max-width: 60px;
     min-width: 40px;
@@ -109,13 +99,12 @@
     box-sizing: border-box;
   }
 
-  /* Two-row blocks */
   .subrow {
     display: flex;
     justify-content: center;
     gap: 8px;
     margin: 4px 0;
-    flex-wrap: wrap; /* allows wrapping on narrow screens */
+    flex-wrap: wrap;
   }
 
   .score-label {
@@ -174,7 +163,7 @@
 <div id="page">
 
 <h1>Canasta Score Sheet</h1>
-<p style="text-align:center;">Reach 8500 to win.</p>
+<p style="text-align:center;">First team to reach 8500 wins.</p>
 
 <div id="teamInputs">
   <input id="teamAName" placeholder="Team A Name">
@@ -320,7 +309,7 @@ function deleteEmptyRounds() {
   let deleted = false;
 
   rows.forEach(row => {
-    const inputs = row.querySelectorAll('input[type="number"]');
+    const inputs = row.querySelectorAll('input[type="text"]');
     const allBlank = [...inputs].every(i => i.value.trim() === "");
 
     if (allBlank) {
@@ -348,14 +337,14 @@ function addRound() {
 
     <td colspan="4" class="women-col">
       <div class="subrow">
-        <input type="number" class="extraA" placeholder="Extra">
-        <input type="number" class="threesA" placeholder="Threes">
-        <input type="number" class="canastasA" placeholder="Canastas">
-        <input type="number" class="specialA" placeholder="Special">
+        <input type="text" inputmode="numeric" pattern="-?[0-9]*" class="extraA" placeholder="Extra">
+        <input type="text" inputmode="numeric" pattern="-?[0-9]*" class="threesA" placeholder="Threes">
+        <input type="text" inputmode="numeric" pattern="-?[0-9]*" class="canastasA" placeholder="Canastas">
+        <input type="text" inputmode="numeric" pattern="-?[0-9]*" class="specialA" placeholder="Special">
       </div>
       <div class="subrow">
-        <input type="number" class="cardA" placeholder="Card">
-        <input type="number" class="deductA" placeholder="Deduct">
+        <input type="text" inputmode="numeric" pattern="-?[0-9]*" class="cardA" placeholder="Card">
+        <input type="text" inputmode="numeric" pattern="-?[0-9]*" class="deductA" placeholder="Deduct">
         <div>
           <span class="roundScore roundTotalA">0</span>
           <span class="score-label">Round</span>
@@ -369,14 +358,14 @@ function addRound() {
 
     <td colspan="4" class="men-col">
       <div class="subrow">
-        <input type="number" class="extraB" placeholder="Extra">
-        <input type="number" class="threesB" placeholder="Threes">
-        <input type="number" class="canastasB" placeholder="Canastas">
-        <input type="number" class="specialB" placeholder="Special">
+        <input type="text" inputmode="numeric" pattern="-?[0-9]*" class="extraB" placeholder="Extra">
+        <input type="text" inputmode="numeric" pattern="-?[0-9]*" class="threesB" placeholder="Threes">
+        <input type="text" inputmode="numeric" pattern="-?[0-9]*" class="canastasB" placeholder="Canastas">
+        <input type="text" inputmode="numeric" pattern="-?[0-9]*" class="specialB" placeholder="Special">
       </div>
       <div class="subrow">
-        <input type="number" class="cardB" placeholder="Card">
-        <input type="number" class="deductB" placeholder="Deduct">
+        <input type="text" inputmode="numeric" pattern="-?[0-9]*" class="cardB" placeholder="Card">
+        <input type="text" inputmode="numeric" pattern="-?[0-9]*" class="deductB" placeholder="Deduct">
         <div>
           <span class="roundScore roundTotalB">0</span>
           <span class="score-label">Round</span>
@@ -391,7 +380,7 @@ function addRound() {
 
   tbody.appendChild(tr);
 
-  tr.querySelectorAll('input[type="number"]').forEach(input => {
+  tr.querySelectorAll('input[type="text"]').forEach(input => {
     input.value = "";
   });
 
